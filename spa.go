@@ -48,6 +48,8 @@ type handler struct {
 
 // ServeHTTP implements [http.Handler]
 func (h handler) ServeHTTP(wr http.ResponseWriter, r *http.Request) {
+	originalPath := r.URL.Path
+
 	p := r.URL.Path
 	if !path.IsAbs(p) {
 		p = "/" + p
@@ -65,7 +67,7 @@ func (h handler) ServeHTTP(wr http.ResponseWriter, r *http.Request) {
 		wr.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	slog.Debug(fmt.Sprintf("spa: request for %s", p))
+	slog.Debug(fmt.Sprintf("spa: request for %s (original: %s", p, originalPath))
 
 	if entry.gzipHandler != nil && strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
 		entry.gzipHandler(wr)
